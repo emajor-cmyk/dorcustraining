@@ -1,0 +1,858 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Dorcus Staff Training Walkthrough</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"/>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;overflow:hidden;font-family:'Inter',sans-serif}
+
+/* ── Portal shell ── */
+.portal{display:flex;height:100vh;flex-direction:column}
+.sidebar{width:220px;background:#1B5EBE;display:flex;flex-direction:column;flex-shrink:0;overflow-y:auto;height:100%}
+.sidebar-logo{padding:14px 14px 12px;border-bottom:1px solid rgba(255,255,255,.1);display:flex;align-items:center;gap:10px}
+.sidebar-logo-icon{width:36px;height:36px;border-radius:8px;background:#F5C200;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.sidebar-logo-icon i{font-size:18px;color:#1B5EBE}
+.sidebar-logo-name{font-size:15px;font-weight:600;color:#1A2B45;font-family:'DM Sans',sans-serif;line-height:1.2}
+.sidebar-logo-sub{font-size:10px;color:rgba(255,255,255,.65)}
+.sidebar-nav{padding:10px 8px;flex:1}
+.nav-btn{display:flex;align-items:center;gap:10px;padding:8px 10px;background:transparent;border:none;cursor:pointer;text-align:left;width:100%;border-radius:6px;margin-bottom:2px;transition:background .12s}
+.nav-btn:hover{background:rgba(255,255,255,.1)}
+.nav-btn.active{background:white}
+.nav-btn i{font-size:15px;color:rgba(255,255,255,.9);width:20px;text-align:center}
+.nav-btn span{font-size:13px;font-weight:400;color:rgba(255,255,255,.9);font-family:'Inter',sans-serif}
+.nav-btn.active i{color:#1B5EBE}
+.nav-btn.active span{color:#1A2B45;font-weight:500}
+.nav-group-label{display:flex;align-items:center;gap:10px;padding:8px 10px;background:transparent;border:none;cursor:pointer;text-align:left;width:100%;border-radius:6px;margin-bottom:2px}
+.nav-group-label i{font-size:15px;color:rgba(255,255,255,.4);width:20px;text-align:center}
+.nav-group-label span{font-size:12px;font-weight:500;color:rgba(255,255,255,.7);font-family:'Inter',sans-serif;flex:1}
+.nav-indent{padding-left:20px!important}
+.sidebar-footer{padding:12px 14px;border-top:1px solid rgba(255,255,255,.1)}
+.sidebar-user{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.sidebar-user-av{width:30px;height:30px;border-radius:50%;background:#E8F0FB;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.sidebar-user-av i{font-size:15px;color:#1B5EBE}
+.sidebar-user-name{font-size:12px;color:#1A2B45;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.sidebar-user-role{font-size:10px;color:rgba(255,255,255,.65)}
+.signout-btn{width:100%;padding:6px;background:transparent;border:1px solid rgba(255,255,255,.2);border-radius:6px;color:rgba(255,255,255,.7);font-size:11px;cursor:pointer;font-family:'Inter',sans-serif}
+
+/* ── Main area ── */
+.main{flex:1;display:flex;overflow:hidden}
+.content{flex:1;overflow-y:auto;display:flex;flex-direction:column;background:#C8D8EC}
+.content-topbar{background:white;border-bottom:.5px solid #D8DCE3;padding:0 28px;display:flex;align-items:center;justify-content:space-between;height:52px;flex-shrink:0}
+.content-topbar-left{display:flex;align-items:center;height:100%;border-bottom:2px solid #F5C200}
+.page-title{font-size:16px;font-weight:600;color:#1A2B45;margin:0;font-family:'DM Sans',sans-serif}
+.page-sub{font-size:11px;color:#4A5568;margin:0}
+.topbar-av{width:32px;height:32px;border-radius:50%;background:#E8F0FB;display:flex;align-items:center;justify-content:center}
+.topbar-av i{font-size:16px;color:#1B5EBE}
+.page-body{padding:24px;flex:1}
+
+/* ── Cards / UI tokens ── */
+.card{background:white;border:.5px solid #D8DCE3;border-radius:8px;padding:16px;margin-bottom:14px}
+.stat-row{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:16px}
+.stat-card{border-radius:12px;padding:14px 16px}
+.stat-card.green{background:#E6F4EC;border:1px solid #A3D4B4}
+.stat-card.amber{background:#FFF3CD;border:1px solid #F5C200}
+.stat-card.blue{background:#E8F0FB;border:1px solid #B5D4F4}
+.stat-num{font-size:26px;font-weight:700;font-family:'DM Sans',sans-serif}
+.stat-lbl{font-size:10px;text-transform:uppercase;letter-spacing:.06em;font-weight:600;margin-top:2px}
+.green .stat-num,.green .stat-lbl{color:#1A6B35}
+.amber .stat-num,.amber .stat-lbl{color:#7A4F00}
+.blue .stat-num,.blue .stat-lbl{color:#1B5EBE}
+.alert-banner{background:#FDECEA;border:1px solid #F5A8A8;border-radius:8px;padding:10px 14px;margin-bottom:14px;display:flex;align-items:center;gap:10px}
+.section-title{font-size:13px;font-weight:600;color:#1A2B45;font-family:'DM Sans',sans-serif;margin-bottom:10px}
+.input{background:#F0F4FA;border:1px solid transparent;border-radius:6px;padding:8px 10px;font-size:13px;color:#1A2B45;width:100%;outline:none;font-family:'Inter',sans-serif}
+.form-lbl{font-size:10px;color:#4A5568;text-transform:uppercase;letter-spacing:.07em;margin-bottom:4px;font-weight:600;display:block}
+.form-row{margin-bottom:10px}
+.btn{padding:8px 18px;border-radius:6px;font-size:13px;font-weight:500;cursor:pointer;border:none;font-family:'Inter',sans-serif}
+.btn-blue{background:#1B5EBE;color:white}
+.btn-ghost{background:transparent;color:#4A5568;border:1px solid #D8DCE3}
+.btn-yellow{background:#F5C200;color:#1A2B45;font-weight:600}
+.pill{font-size:10px;padding:2px 9px;border-radius:10px;font-weight:600;font-family:'Inter',sans-serif}
+.pill-g{background:#E6F4EC;color:#1A6B35}
+.pill-a{background:#FFF3CD;color:#7A4F00}
+.pill-b{background:#E8F0FB;color:#1B5EBE}
+.pill-r{background:#FDECEA;color:#8B1A1A}
+.res-row{display:flex;align-items:center;gap:10px;padding:10px 12px;background:white;border-radius:7px;border:.5px solid #D8DCE3;margin-bottom:7px}
+.res-row.out{background:#FEF3C7;border-color:#F5C200}
+.res-row.overdue{background:#FBBFBF;border-color:#F5A8A8}
+.av{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;flex-shrink:0}
+.av-b{background:#DBEAFE;color:#1E40AF}
+.av-g{background:#D1FAE5;color:#065F46}
+.av-a{background:#FEF3C7;color:#92400E}
+.av-p{background:#EDE9FE;color:#5B21B6}
+.av-r{background:#FDECEA;color:#8B1A1A}
+.chk-item{display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:.5px solid #E2E8F0;font-size:13px;color:#1A2B45}
+.chk-item:last-child{border-bottom:none}
+.chkbox{width:16px;height:16px;border:1.5px solid #CBD5E1;border-radius:4px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700}
+.chkbox.on{background:#1A6B35;border-color:#1A6B35;color:white}
+.med-row{display:flex;align-items:center;gap:10px;padding:10px 12px;background:white;border-radius:7px;border:.5px solid #D8DCE3;margin-bottom:7px}
+.med-status{display:flex;gap:4px}
+.med-btn{padding:3px 10px;border-radius:5px;font-size:10px;font-weight:600;cursor:pointer;border:1px solid #D8DCE3;background:white;color:#4A5568;font-family:'Inter',sans-serif}
+.med-btn.taken{background:#E6F4EC;border-color:#A3D4B4;color:#1A6B35}
+.med-btn.refused{background:#FDECEA;border-color:#F5A8A8;color:#8B1A1A}
+.med-btn.missed{background:#FFF3CD;border-color:#F5C200;color:#7A4F00}
+.tab-bar{display:flex;gap:2px;background:#F0F4FA;border-radius:7px;padding:3px;margin-bottom:16px}
+.tab{padding:6px 14px;border-radius:5px;font-size:12px;font-weight:500;cursor:pointer;color:#4A5568;border:none;background:transparent;font-family:'Inter',sans-serif}
+.tab.active{background:white;color:#1A2B45;font-weight:600;box-shadow:0 1px 3px rgba(0,0,0,.08)}
+.quick-sign{background:#E8F0FB;border:1px solid #B5D4F4;border-radius:8px;padding:14px;margin-bottom:14px}
+
+/* ── Coach overlay ── */
+@media(max-width:599px){
+  .sidebar{display:none}
+  .content{width:100%}
+  .page-body{padding:14px}
+}
+.overlay-dim{position:fixed;inset:0;background:rgba(10,20,40,.55);z-index:1000;pointer-events:none;transition:opacity .2s}
+.highlight-ring{position:fixed;z-index:1001;border-radius:10px;box-shadow:0 0 0 4px #F5C200,0 0 0 8px rgba(245,194,0,.3);pointer-events:none;transition:all .3s cubic-bezier(.4,0,.2,1)}
+.coach-box{position:fixed;z-index:1002;background:white;border-radius:12px;padding:16px 18px;width:calc(100vw - 24px);max-width:310px;box-shadow:0 8px 32px rgba(0,0,0,.25);border:.5px solid #D8DCE3;left:50%;transform:translateX(-50%)}
+.coach-step-lbl{font-size:9px;font-weight:700;color:#1B5EBE;text-transform:uppercase;letter-spacing:.09em;margin-bottom:6px}
+.coach-title{font-size:15px;font-weight:700;color:#1A2B45;margin-bottom:8px;font-family:'DM Sans',sans-serif;line-height:1.3}
+.coach-body{font-size:12px;color:#4A5568;line-height:1.6;margin-bottom:14px}
+.coach-body strong{color:#1A2B45;font-weight:600}
+.coach-arrow{display:inline-block;width:0;height:0;position:absolute}
+.coach-footer{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.coach-dots{display:flex;gap:4px}
+.coach-dot{width:6px;height:6px;border-radius:50%;background:#D8DCE3}
+.coach-dot.on{background:#1B5EBE}
+.coach-next{background:#1B5EBE;color:white;border:none;border-radius:7px;padding:8px 18px;font-size:12px;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif}
+.coach-next:hover{background:#154A99}
+.coach-skip{background:transparent;border:none;color:#94A3B8;font-size:11px;cursor:pointer;font-family:'Inter',sans-serif;padding:4px 8px}
+.coach-skip:hover{color:#4A5568}
+.role-switcher{background:#EEF4FF;border-bottom:1px solid #B5D4F4;padding:8px 16px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.role-sw-btn{padding:5px 14px;border-radius:6px;border:1.5px solid #D8DCE3;background:white;color:#4A5568;font-size:11px;font-weight:500;cursor:pointer;font-family:'Inter',sans-serif}
+.role-sw-btn.active{border-color:#1B5EBE;color:#1B5EBE;font-weight:600}
+.progress-track{height:3px;background:#D8DCE3;overflow:hidden}
+.progress-fill{height:100%;background:#1B5EBE;transition:width .4s}
+.info-banner{background:#E8F0FB;border:1px solid #B5D4F4;border-radius:7px;padding:10px 12px;font-size:12px;color:#1B5EBE;margin-bottom:12px;line-height:1.5}
+.ua-result-row{display:flex;align-items:center;gap:10px;padding:10px 12px;background:white;border-radius:7px;border:.5px solid #D8DCE3;margin-bottom:7px}
+.select{background:#F0F4FA;border:1px solid transparent;border-radius:6px;padding:8px 10px;font-size:13px;color:#1A2B45;width:100%;outline:none;font-family:'Inter',sans-serif}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.incident-type-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:10px}
+.inc-type-btn{padding:8px 12px;border-radius:6px;border:1px solid #D8DCE3;background:white;font-size:11px;color:#4A5568;cursor:pointer;text-align:left;font-family:'Inter',sans-serif;transition:all .1s}
+.inc-type-btn:hover{border-color:#1B5EBE;color:#1B5EBE}
+.inc-type-btn.sel{border-color:#1B5EBE;background:#E8F0FB;color:#1B5EBE;font-weight:600}
+</style>
+</head>
+<body>
+
+<!-- Role switcher + progress bar -->
+<div class="role-switcher">
+  <span style="font-size:11px;font-weight:600;color:#4A5568">Training as:</span>
+  <button class="role-sw-btn active" id="btn-ra" onclick="switchRole('ra')"><i class="bi bi-house-fill" style="font-size:10px;margin-right:4px"></i>Resident Advisor</button>
+  <button class="role-sw-btn" id="btn-pc" onclick="switchRole('pc')"><i class="bi bi-clipboard2-check-fill" style="font-size:10px;margin-right:4px"></i>Program Coordinator</button>
+  <span style="margin-left:auto;font-size:11px;color:#4A5568">Step <strong id="step-counter">1</strong> of <strong id="step-total">—</strong></span>
+</div>
+<div class="progress-track"><div class="progress-fill" id="prog" style="width:0%"></div></div>
+
+<!-- Portal shell -->
+<div class="main">
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <div class="sidebar-logo">
+      <div class="sidebar-logo-icon"><i class="bi bi-house-fill"></i></div>
+      <div>
+        <div class="sidebar-logo-name">Dorcus Home</div>
+        <div class="sidebar-logo-sub">Management System</div>
+      </div>
+    </div>
+    <div class="sidebar-nav" id="sidebar-nav"></div>
+    <div class="sidebar-footer">
+      <div class="sidebar-user">
+        <div class="sidebar-user-av"><i class="bi bi-person-fill"></i></div>
+        <div>
+          <div class="sidebar-user-name" id="user-name">New Staff Member</div>
+          <div class="sidebar-user-role" id="user-role">Resident Advisor</div>
+        </div>
+      </div>
+      <button class="signout-btn">Sign Out</button>
+    </div>
+  </div>
+
+  <!-- Content -->
+  <div class="content">
+    <div class="content-topbar">
+      <div class="content-topbar-left">
+        <div>
+          <h1 class="page-title" id="page-title">RA Home</h1>
+          <p class="page-sub" id="page-sub">Dorcus 1 – 801 · Live status</p>
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px">
+        <div class="topbar-av"><i class="bi bi-person-fill"></i></div>
+      </div>
+    </div>
+    <div class="page-body" id="page-body"></div>
+  </div>
+</div>
+
+<!-- Coach overlay -->
+<div class="overlay-dim" id="overlay"></div>
+<div class="highlight-ring" id="highlight" style="opacity:0"></div>
+<div class="coach-box" id="coach-box">
+  <div class="coach-step-lbl" id="coach-step-lbl"></div>
+  <div class="coach-title" id="coach-title"></div>
+  <div class="coach-body" id="coach-body"></div>
+  <div class="coach-footer">
+    <div>
+      <div class="coach-dots" id="coach-dots"></div>
+    </div>
+    <div style="display:flex;align-items:center;gap:8px">
+      <button class="coach-skip" onclick="skipTour()">Skip tour</button>
+      <button class="coach-next" id="coach-next" onclick="nextStep()">Next →</button>
+    </div>
+  </div>
+</div>
+
+<script>
+var role = 'ra';
+var stepIndex = 0;
+
+var RESIDENTS = [
+  {id:'r1',name:'Daniel T.',ini:'DT',av:'av-b',fac:'Dorcus 1 - 801',status:'in',reason:null,timeOut:null,estReturn:''},
+  {id:'r2',name:'Marcus R.',ini:'MR',av:'av-g',fac:'Dorcus 1 - 801',status:'out',reason:'Work',timeOut:'2:15 PM',estReturn:'6:30 PM'},
+  {id:'r3',name:'Sam W.',ini:'SW',av:'av-a',fac:'Dorcus 1 - 801',status:'in',reason:null,timeOut:null,estReturn:''},
+  {id:'r4',name:'Luis L.',ini:'LL',av:'av-p',fac:'Dorcus 1 - 801',status:'in',reason:null,timeOut:null,estReturn:''},
+];
+
+var RA_NAV = [
+  {id:'ra_home',    label:'RA Home',          icon:'bi-house-fill',             group:false},
+  {id:'ra_notif',   label:'Notifications',    icon:'bi-bell-fill',              group:false},
+  {id:'inout',      label:'In/Out Board',      icon:'bi-door-open-fill',         group:false},
+  {id:'med_log',    label:'Medication Log',    icon:'bi-capsule-pill',           group:false},
+  {id:'ua_bac',     label:'Urine & BAC Testing', icon:'bi-flask-fill',           group:false},
+  {id:'shift',      label:'Shift Reports',     icon:'bi-pencil-fill',            group:false},
+  {id:'headcount',  label:'Headcount Log',     icon:'bi-hash',                   group:false},
+  {id:'ra_forms',   label:'RA Forms',          icon:'bi-file-earmark-text-fill', group:false},
+];
+
+var PC_NAV = [
+  {id:'dashboard',   label:'Dashboard',          icon:'bi-speedometer'},
+  {id:'residents',   label:'Residents',           icon:'bi-people-fill'},
+  {id:'referrals',   label:'Referral Pipeline',   icon:'bi-clipboard-fill'},
+  {id:'reports',     label:'Reports',             icon:'bi-bar-chart-fill'},
+  {id:'pc_intake',   label:'Intake',              icon:'bi-clipboard2-check-fill'},
+  {id:'pc_followups',label:'Resident Follow-ups', icon:'bi-arrow-repeat'},
+  {id:'pc_discharge',label:'Discharge Meeting',   icon:'bi-box-arrow-right'},
+];
+
+/* ─── RA TOUR STEPS ─────────────────────────────────────────── */
+var RA_STEPS = [
+  {
+    screen:'ra_home', title:'Welcome to RA Home',
+    body:'This is your home base every shift. It loads automatically when you log in. You can see everything at a glance — who\'s in the building, who\'s out, and what needs your attention right now.',
+    highlight:'stat-row', placement:'right'
+  },
+  {
+    screen:'ra_home', title:'Resident status at a glance',
+    body:'These three cards show you a live count. <strong>Green = In Building</strong>, <strong>Amber = Out</strong>, and blue shows total capacity. If anyone is overdue, a red alert appears above the resident list.',
+    highlight:'stat-row', placement:'right'
+  },
+  {
+    screen:'ra_home', title:'Quick Sign In / Out',
+    body:'Use this search box to find a resident and sign them in or out without leaving this screen. Type their name, select them, choose Sign In or Sign Out, add an estimated return time if going out, then hit Submit.',
+    highlight:'quick-sign', placement:'right'
+  },
+  {
+    screen:'ra_home', title:'Live resident tiles',
+    body:'Below the search box you\'ll see every resident in your facility. <strong>Green tile = In</strong>, <strong>Yellow tile = Out</strong>, <strong>Red tile = Overdue</strong> (past their estimated return by 10+ min). The list automatically sorts overdue residents to the top.',
+    highlight:'res-grid', placement:'right'
+  },
+  {
+    screen:'inout', title:'In/Out Board',
+    body:'The full In/Out Board lives here in the sidebar. It shows the same status as RA Home but with more detail — sign-out reason, estimated return, and a Late Entry option if you forgot to log a movement in real time.',
+    highlight:'page-body', placement:'right',
+    nav:'inout'
+  },
+  {
+    screen:'inout', title:'Signing a resident in',
+    body:'Click any resident row to expand their record. You\'ll see their current status and a Sign In or Sign Out button depending on where they are. The time stamps automatically — you just confirm.',
+    highlight:'res-list', placement:'right'
+  },
+  {
+    screen:'med_log', title:'Medication Log',
+    body:'This is where you record every medication pass. The portal shows each resident with their current medications listed. You tap the correct status for each one.',
+    highlight:'page-body', placement:'right',
+    nav:'med_log'
+  },
+  {
+    screen:'med_log', title:'Observation statuses',
+    body:'For each medication you choose one of four statuses: <strong>Taken</strong> (you watched them take it), <strong>Refused</strong>, <strong>Missed</strong>, or <strong>Absent</strong>. Never mark Taken unless you physically observed it.',
+    highlight:'med-section', placement:'right'
+  },
+  {
+    screen:'ua_bac', title:'Urine & BAC Testing',
+    body:'This screen manages both the scheduled urine test rotation and unscheduled (ad-hoc) tests. Scheduled tests appear automatically based on the rotation. Unscheduled tests are initiated here by you or Admin.',
+    highlight:'page-body', placement:'right',
+    nav:'ua_bac'
+  },
+  {
+    screen:'ua_bac', title:'Recording a test result',
+    body:'Select Pass or Fail, then press <strong>Save Result</strong> to commit. The result is saved with your name and timestamp. If a test comes back positive, Admin is automatically notified to contact the P&O officer.',
+    highlight:'ua-result-section', placement:'right'
+  },
+  {
+    screen:'headcount', title:'Headcount Log',
+    body:'You must perform a physical headcount at shift change and every 2 hours overnight. This screen is where you log it. Physically walk and confirm each resident, check them off, then submit.',
+    highlight:'page-body', placement:'right',
+    nav:'headcount'
+  },
+  {
+    screen:'headcount', title:'Submitting a headcount',
+    body:'Check off each resident you can physically see. If a resident is unaccounted for, note their location before submitting. The log saves with your name and the exact time.',
+    highlight:'hc-checklist', placement:'right'
+  },
+  {
+    screen:'shift', title:'Shift Reports',
+    body:'At the end of every shift, file a shift report here. It\'s a short summary of what happened — resident behavior, any concerns, visitors, or notable events. The incoming RA and Admin can both see it.',
+    highlight:'page-body', placement:'right',
+    nav:'shift'
+  },
+  {
+    screen:'ra_forms', title:'RA Forms — Incident Reports',
+    body:'If anything notable happens during your shift — even if no one was hurt — file an incident report here. Common types include unauthorized exit attempts, verbal altercations, and medical concerns. Always file; under-reporting is the most common mistake.',
+    highlight:'page-body', placement:'right',
+    nav:'ra_forms'
+  },
+  {
+    screen:'ra_forms', title:'You\'re ready!',
+    body:'That covers every section of the portal you\'ll use as an RA. When you log in for real, these are the exact same screens with live data. Start each shift at <strong>RA Home</strong>, and work through the sidebar as needed.',
+    highlight:null, placement:'center'
+  },
+];
+
+var PC_STEPS = [
+  {
+    screen:'dashboard', title:'PC Dashboard',
+    body:'As a Program Coordinator, your portal starts here. The Dashboard shows facility-wide statistics — total residents, occupancy by house, recent activity, and anything that needs your attention today.',
+    highlight:'page-body', placement:'right'
+  },
+  {
+    screen:'residents', title:'Resident Management',
+    body:'The Residents page is your main workspace. You can see all residents across both facilities, filter by house or status, and open any resident\'s full profile to view intake documents, medications, notes, and case history.',
+    highlight:'page-body', placement:'right',
+    nav:'residents'
+  },
+  {
+    screen:'pc_intake', title:'Day 1 Intake',
+    body:'When a new resident arrives, you start here. The intake form walks you through Notice of Arrival (NOA), background info, and a required checklist. All of it must be completed before the resident is marked active.',
+    highlight:'page-body', placement:'right',
+    nav:'pc_intake'
+  },
+  {
+    screen:'pc_intake', title:'Intake checklist',
+    body:'The checklist at the end of intake covers house rules sign-off, room assignment, emergency contacts, medication verification, and P&O officer contact. Every item must be checked before you can complete intake.',
+    highlight:'intake-checklist', placement:'right'
+  },
+  {
+    screen:'pc_followups', title:'Resident Follow-ups',
+    body:'Every resident must have a PC meeting logged every 14 days. This page shows you who is due or overdue. Click a resident to log the meeting, update their notes, and adjust their Privilege Level if needed.',
+    highlight:'page-body', placement:'right',
+    nav:'pc_followups'
+  },
+  {
+    screen:'referrals', title:'Referral Pipeline',
+    body:'New applicants move through this pipeline: Received → Screening (RC) → Interview (PC) → Approved → Active. You take over at the Interview stage and are responsible for moving applicants forward or rejecting them.',
+    highlight:'page-body', placement:'right',
+    nav:'referrals'
+  },
+  {
+    screen:'pc_discharge', title:'Discharge Meeting',
+    body:'When a resident completes the program, the discharge meeting is run from here. It\'s a structured checklist — exit interview, room inspection, keys returned, P&O notified, forwarding address confirmed. Every item is required.',
+    highlight:'page-body', placement:'right',
+    nav:'pc_discharge'
+  },
+  {
+    screen:'pc_discharge', title:'You\'re ready!',
+    body:'That\'s the full PC workflow in the portal. For your first intake, your supervisor will walk through it with you live. The portal locks nothing — if you get stuck, every section has a Save Draft option.',
+    highlight:null, placement:'center'
+  },
+];
+
+var currentSteps = RA_STEPS;
+var currentPage = 'ra_home';
+
+/* ─── SCREENS ──────────────────────────────────────────────── */
+function renderScreen(page){
+  currentPage = page;
+  var nav = role==='ra' ? RA_NAV : PC_NAV;
+  document.getElementById('sidebar-nav').innerHTML = nav.map(function(n){
+    return '<button class="nav-btn'+(n.id===page?' active':'')+'" onclick="goToPage(\''+n.id+'\')">'
+      +'<i class="bi '+n.icon+'"></i><span>'+n.label+'</span></button>';
+  }).join('');
+
+  var titles = {
+    ra_home:'RA Home', inout:'In/Out Board', med_log:'Medication Log',
+    ua_bac:'Urine & BAC Testing', shift:'Shift Reports', headcount:'Headcount Log',
+    ra_forms:'RA Forms', ra_notif:'Notifications',
+    dashboard:'Dashboard', residents:'Resident Management', referrals:'Referral Pipeline',
+    pc_intake:'Intake', pc_followups:'Resident Follow-ups', pc_discharge:'Discharge Meeting',
+    reports:'Reports'
+  };
+  var subs = {
+    ra_home:'Dorcus 1 – 801 · Live status', inout:'Track resident location in real time',
+    med_log:new Date().toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})+' · Log daily observations',
+    ua_bac:'Scheduled and unscheduled tests', shift:'End-of-shift summaries',
+    headcount:'Required every 2 hours overnight', ra_forms:'Submit and manage RA forms', ra_notif:'3 unread',
+    dashboard:'At-a-glance overview · All facilities', residents:'Active residents across all facilities',
+    referrals:'Manage applications from received to active', pc_intake:'Day 1 and Day 3/4 intake meetings',
+    pc_followups:'Scheduled follow-ups and open items', pc_discharge:'Conduct and record discharge meetings',
+    reports:'Generate and export reports'
+  };
+  document.getElementById('page-title').textContent = titles[page]||page;
+  document.getElementById('page-sub').textContent = subs[page]||'';
+
+  var body = document.getElementById('page-body');
+  if(page==='ra_home') body.innerHTML = screenRAHome();
+  else if(page==='inout') body.innerHTML = screenInOut();
+  else if(page==='med_log') body.innerHTML = screenMedLog();
+  else if(page==='ua_bac') body.innerHTML = screenUABAC();
+  else if(page==='headcount') body.innerHTML = screenHeadcount();
+  else if(page==='shift') body.innerHTML = screenShift();
+  else if(page==='ra_forms') body.innerHTML = screenRAForms();
+  else if(page==='dashboard') body.innerHTML = screenDashboard();
+  else if(page==='residents') body.innerHTML = screenResidents();
+  else if(page==='referrals') body.innerHTML = screenReferrals();
+  else if(page==='pc_intake') body.innerHTML = screenPCIntake();
+  else if(page==='pc_followups') body.innerHTML = screenPCFollowups();
+  else if(page==='pc_discharge') body.innerHTML = screenPCDischarge();
+  else body.innerHTML = '<div style="padding:40px;text-align:center;color:#4A5568"><i class="bi bi-layout-text-sidebar" style="font-size:32px;opacity:.3;display:block;margin-bottom:12px"></i><div style="font-size:13px">Select a section from the sidebar</div></div>';
+}
+
+function screenRAHome(){
+  return '<div class="stat-row" id="stat-row">'
+    +'<div class="stat-card green"><div style="display:flex;align-items:center;gap:8px"><div style="width:10px;height:10px;border-radius:50%;background:#1A6B35"></div><div class="stat-num">3</div></div><div class="stat-lbl">In Building</div></div>'
+    +'<div class="stat-card amber"><div style="display:flex;align-items:center;gap:8px"><div style="width:10px;height:10px;border-radius:50%;background:#7A4F00"></div><div class="stat-num">1</div></div><div class="stat-lbl">Out</div><div style="margin-top:4px"><span style="font-size:9px;font-weight:600;padding:1px 6px;border-radius:5px;background:rgba(122,79,0,.12);color:#7A4F00">Work ×1</span></div></div>'
+    +'<div class="stat-card blue"><div style="display:flex;align-items:center;gap:8px"><div style="width:10px;height:10px;border-radius:50%;background:#1B5EBE"></div><div class="stat-num">4</div></div><div class="stat-lbl">Total Residents</div></div>'
+    +'</div>'
+    +'<div class="quick-sign" id="quick-sign"><div class="section-title" style="margin-bottom:8px">Quick Sign In / Out</div>'
+    +'<input class="input" placeholder="🔍  Search resident by name..." style="margin-bottom:8px;background:white;border:1px solid #D8DCE3"/>'
+    +'<div style="display:flex;gap:6px"><button class="btn btn-blue" style="flex:1;opacity:.5;font-size:12px" disabled>Sign In</button><button class="btn btn-ghost" style="flex:1;opacity:.5;font-size:12px" disabled>Sign Out</button></div></div>'
+    +'<div class="section-title">Residents — Dorcus 1 – 801</div>'
+    +'<div id="res-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:8px">'
+    +RESIDENTS.map(function(r){
+      var isOut=r.status==='out';
+      var bg=isOut?'#FEF3C7':'white', bc=isOut?'#F5C200':'#D8DCE3', dot=isOut?'#7A4F00':'#1A6B35';
+      var sub=isOut?('Out · '+r.reason+(r.estReturn?' · ETR '+r.estReturn:'')):'In building';
+      return '<div style="background:'+bg+';border:.5px solid '+bc+';border-radius:8px;padding:10px 12px">'
+        +'<div style="width:7px;height:7px;border-radius:50%;background:'+dot+';margin-bottom:6px"></div>'
+        +'<div style="font-size:12px;font-weight:500;color:#1A2B45;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+r.name+'</div>'
+        +'<div style="font-size:10px;color:'+(isOut?'#7A4F00':'#4A5568')+';margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+sub+'</div>'
+        +'</div>';
+    }).join('')+'</div>';
+}
+
+function screenInOut(){
+  return '<div class="info-banner"><i class="bi bi-info-circle-fill" style="margin-right:6px"></i>Click a resident row to sign them in or out. All movements are logged with your name and timestamp.</div>'
+    +'<div id="res-list">'
+    +RESIDENTS.map(function(r){
+      var isOut=r.status==='out';
+      return '<div class="res-row'+(isOut?' out':'')+'">'
+        +'<div class="av '+r.av+'">'+r.ini+'</div>'
+        +'<div style="flex:1;min-width:0"><div style="font-size:13px;font-weight:600;color:#1A2B45">'+r.name+'</div>'
+        +'<div style="font-size:11px;color:#4A5568">'+(isOut?r.reason+' · Out since '+r.timeOut+' · ETR '+r.estReturn:'In building')+'</div></div>'
+        +'<span class="pill '+(isOut?'pill-a':'pill-g')+'">'+(isOut?'OUT':'IN')+'</span>'
+        +'<button class="btn '+(isOut?'btn-blue':'btn-ghost')+'" style="font-size:11px;padding:5px 12px;margin-left:8px">'+(isOut?'Sign In':'Sign Out')+'</button>'
+        +'</div>';
+    }).join('')+'</div>'
+    +'<div style="margin-top:14px;padding-top:14px;border-top:.5px solid #D8DCE3">'
+    +'<button class="btn btn-ghost" style="font-size:12px"><i class="bi bi-clock-history" style="margin-right:6px"></i>Late Entry — log a past movement</button></div>';
+}
+
+function screenMedLog(){
+  var meds = [
+    {res:'Daniel T.',ini:'DT',av:'av-b',meds:['Sertraline 50mg','Naltrexone 380mg']},
+    {res:'Marcus R.',ini:'MR',av:'av-g',meds:['Metformin 500mg']},
+    {res:'Sam W.',ini:'SW',av:'av-a',meds:['Buprenorphine 8mg','Lisinopril 10mg']},
+    {res:'Luis L.',ini:'LL',av:'av-p',meds:[]},
+  ];
+  return '<div class="tab-bar"><button class="tab active">Morning Pass</button><button class="tab">Noon Pass</button><button class="tab">Evening Pass</button></div>'
+    +'<div id="med-section">'
+    +meds.map(function(m){
+      if(!m.meds.length) return '';
+      return '<div class="card" style="margin-bottom:10px">'
+        +'<div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">'
+        +'<div class="av '+m.av+'" style="width:28px;height:28px;font-size:10px">'+m.ini+'</div>'
+        +'<div style="font-size:13px;font-weight:600;color:#1A2B45">'+m.res+'</div></div>'
+        +m.meds.map(function(med){
+          return '<div style="display:flex;align-items:center;justify-content:space-between;padding:7px 0;border-bottom:.5px solid #F1F5F9">'
+            +'<div style="font-size:12px;color:#1A2B45">'+med+'</div>'
+            +'<div class="med-status">'
+            +'<button class="med-btn taken">Taken</button>'
+            +'<button class="med-btn refused">Refused</button>'
+            +'<button class="med-btn missed">Missed</button>'
+            +'<button class="med-btn" style="background:#F0F4FA;color:#4A5568">Absent</button>'
+            +'</div></div>';
+        }).join('')
+        +'</div>';
+    }).join('')+'</div>';
+}
+
+function screenUABAC(){
+  return '<div class="tab-bar"><button class="tab active">Scheduled Tests</button><button class="tab">Unscheduled Test</button><button class="tab">BAC Log</button></div>'
+    +'<div class="info-banner" style="margin-bottom:14px"><i class="bi bi-calendar-check" style="margin-right:6px"></i>3 residents are due for a urine test this week. Results must be logged by end of shift.</div>'
+    +'<div id="ua-result-section">'
+    +RESIDENTS.slice(0,3).map(function(r,i){
+      var due = i<2;
+      return '<div class="ua-result-row">'
+        +'<div class="av '+r.av+'">'+r.ini+'</div>'
+        +'<div style="flex:1;min-width:0"><div style="font-size:13px;font-weight:600;color:#1A2B45">'+r.name+'</div>'
+        +'<div style="font-size:11px;color:#4A5568">'+(due?'Due today':'Due this week')+'</div></div>'
+        +(due
+          ? '<div style="display:flex;align-items:center;gap:6px">'
+            +'<button class="btn btn-ghost" style="font-size:11px;padding:5px 12px">Pass</button>'
+            +'<button class="btn btn-ghost" style="font-size:11px;padding:5px 12px;color:#8B1A1A;border-color:#F5A8A8">Fail</button>'
+            +'<button class="btn btn-blue" style="font-size:11px;padding:5px 12px;opacity:.4" disabled>Save Result</button>'
+            +'</div>'
+          : '<span class="pill pill-b">Upcoming</span>')
+        +'</div>';
+    }).join('')+'</div>';
+}
+
+function screenHeadcount(){
+  return '<div class="card"><div class="section-title">Perform & Log Headcount — Dorcus 1</div>'
+    +'<div style="font-size:12px;color:#4A5568;margin-bottom:14px">Physically confirm each resident is present, check them off, then submit.</div>'
+    +'<div id="hc-checklist">'
+    +RESIDENTS.map(function(r){
+      var isOut=r.status==='out';
+      return '<div class="chk-item">'
+        +'<div class="chkbox '+(isOut?'':'')+'"></div>'
+        +'<div class="av '+r.av+'" style="width:24px;height:24px;font-size:9px">'+r.ini+'</div>'
+        +'<div style="flex:1"><div style="font-size:13px;font-weight:600;color:#1A2B45">'+r.name+'</div>'
+        +'<div style="font-size:10px;color:#4A5568">'+(isOut?'Marked OUT — locate before checking off':'Marked IN')+'</div></div>'
+        +'<span class="pill '+(isOut?'pill-a':'pill-g')+'">'+(isOut?'OUT':'IN')+'</span>'
+        +'</div>';
+    }).join('')+'</div>'
+    +'<div style="padding-top:12px;margin-top:6px;border-top:.5px solid #D8DCE3;display:flex;align-items:center;justify-content:space-between">'
+    +'<div style="font-size:12px;color:#4A5568">0 of 4 confirmed</div>'
+    +'<button class="btn btn-blue" style="opacity:.5" disabled>Submit Headcount</button></div></div>'
+    +'<div class="card" style="background:#F8FAFC"><div style="font-size:11px;font-weight:600;color:#4A5568;margin-bottom:8px">Recent headcounts</div>'
+    +'<div style="font-size:12px;color:#4A5568">Last log: Today 8:00 PM · 4/4 confirmed · by C. Johnson</div></div>';
+}
+
+function screenShift(){
+  return '<div class="card"><div class="section-title">New Shift Report</div>'
+    +'<div class="form-row"><label class="form-lbl">Shift period</label>'
+    +'<select class="select"><option>Evening (4PM–12AM)</option><option>Night (12AM–8AM)</option><option>Day (8AM–4PM)</option></select></div>'
+    +'<div class="form-row"><label class="form-lbl">Shift summary *</label>'
+    +'<textarea class="input" rows="4" placeholder="Brief summary — resident behavior, any concerns, visitors, notable events..." style="height:90px;resize:none"></textarea></div>'
+    +'<div class="form-row"><label class="form-lbl">Incidents filed?</label>'
+    +'<select class="select"><option>No incidents this shift</option><option>Yes — I filed an incident report</option></select></div>'
+    +'<div style="display:flex;gap:8px;margin-top:14px"><button class="btn btn-blue">Submit Shift Report</button><button class="btn btn-ghost">Save Draft</button></div></div>'
+    +'<div class="card" style="background:#F8FAFC"><div style="font-size:11px;font-weight:600;color:#4A5568;margin-bottom:8px">Previous reports</div>'
+    +'<div style="font-size:12px;color:#4A5568">Last report: Yesterday 12:03 AM · Evening shift · C. Johnson</div></div>';
+}
+
+function screenRAForms(){
+  var types=[['Incident Report','bi-exclamation-triangle-fill'],['Day of Discharge','bi-box-arrow-right'],['Fire Drill Log','bi-fire'],['Compensation Request','bi-cash-coin']];
+  return '<div class="card"><div class="section-title">New Form</div>'
+    +'<div class="incident-type-grid" id="inc-type-grid">'
+    +types.map(function(t){
+      return '<button class="inc-type-btn"><i class="bi '+t[1]+'" style="margin-right:6px;opacity:.6"></i>'+t[0]+'</button>';
+    }).join('')+'</div>'
+    +'<div style="margin-top:14px;padding-top:14px;border-top:.5px solid #F1F5F9">'
+    +'<div class="two-col">'
+    +'<div class="form-row"><label class="form-lbl">Date</label><input class="input" type="date" value="'+new Date().toISOString().split('T')[0]+'"/></div>'
+    +'<div class="form-row"><label class="form-lbl">Time</label><input class="input" type="text" placeholder="e.g. 11:15 PM"/></div>'
+    +'</div>'
+    +'<div class="form-row"><label class="form-lbl">Resident involved</label>'
+    +'<select class="select"><option value="">-- Select --</option>'
+    +RESIDENTS.map(function(r){return '<option>'+r.name+'</option>';}).join('')
+    +'</select></div>'
+    +'<div class="form-row"><label class="form-lbl">Description *</label>'
+    +'<textarea class="input" rows="3" style="height:70px;resize:none" placeholder="What happened, in order, factually..."></textarea></div>'
+    +'<div style="display:flex;gap:8px;margin-top:12px"><button class="btn btn-blue">Submit Report</button><button class="btn btn-ghost">Save Draft</button></div>'
+    +'</div></div>';
+}
+
+function screenDashboard(){
+  return '<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px">'
+    +'<div class="card" style="text-align:center"><div style="font-size:10px;color:#4A5568;text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px">Active Residents</div><div style="font-size:28px;font-weight:700;color:#1A6B35;font-family:\'DM Sans\',sans-serif">20</div></div>'
+    +'<div class="card" style="text-align:center"><div style="font-size:10px;color:#4A5568;text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px">Dorcus 1</div><div style="font-size:28px;font-weight:700;color:#1B5EBE;font-family:\'DM Sans\',sans-serif">10</div></div>'
+    +'<div class="card" style="text-align:center"><div style="font-size:10px;color:#4A5568;text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px">Dorcus 2</div><div style="font-size:28px;font-weight:700;color:#D4A800;font-family:\'DM Sans\',sans-serif">10</div></div>'
+    +'<div class="card" style="text-align:center"><div style="font-size:10px;color:#4A5568;text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px">Referrals Pending</div><div style="font-size:28px;font-weight:700;color:#7A4F00;font-family:\'DM Sans\',sans-serif">5</div></div>'
+    +'</div>'
+    +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">'
+    +'<div class="card"><div class="section-title">Follow-ups Due</div>'
+    +['Daniel T.','Marcus R.'].map(function(n){return '<div class="chk-item" style="border-color:#F1F5F9"><div style="width:7px;height:7px;border-radius:50%;background:#F5C200;flex-shrink:0"></div><div style="font-size:12px;flex:1">'+n+'</div><span class="pill pill-a">Overdue</span></div>';}).join('')+'</div>'
+    +'<div class="card"><div class="section-title">Recent Activity</div>'
+    +'<div style="font-size:12px;color:#4A5568;line-height:2">Kevin H. — Intake completed · Today<br>Daniel T. — Follow-up logged · 2 days ago<br>Marcus R. — UA: Negative · Yesterday</div></div>'
+    +'</div>';
+}
+
+function screenResidents(){
+  var allRes=[
+    {name:'Daniel T.',ini:'DT',av:'av-b',fac:'Dorcus 1 - 801',dp:'DP-1',doc:'DOC#114892'},
+    {name:'Marcus R.',ini:'MR',av:'av-g',fac:'Dorcus 1 - 801',dp:'DP-0',doc:'DOC#118734'},
+    {name:'Sam W.',ini:'SW',av:'av-a',fac:'Dorcus 2 - 24th St',dp:'DP-2',doc:'DOC#122341'},
+    {name:'Luis L.',ini:'LL',av:'av-p',fac:'Dorcus 1 - 801',dp:'DP-0',doc:'DOC#109823'},
+    {name:'Kevin H.',ini:'KH',av:'av-r',fac:'Dorcus 1 - 801',dp:'DP-1',doc:'DOC#131204'},
+  ];
+  return '<div style="display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap">'
+    +'<input class="input" placeholder="🔍  Search by name or DOC#..." style="flex:1;min-width:200px;background:white;border:1px solid #D8DCE3"/>'
+    +'<select class="select" style="width:auto"><option>All Facilities</option><option>Dorcus 1 - 801</option><option>Dorcus 2 - 24th St</option></select>'
+    +'<select class="select" style="width:auto"><option>Active</option><option>All</option></select></div>'
+    +allRes.map(function(r){
+      return '<div class="res-row" style="cursor:pointer">'
+        +'<div class="av '+r.av+'">'+r.ini+'</div>'
+        +'<div style="flex:1;min-width:0"><div style="font-size:13px;font-weight:600;color:#1A2B45">'+r.name+'</div>'
+        +'<div style="font-size:11px;color:#4A5568">'+r.fac+' · '+r.doc+'</div></div>'
+        +'<span class="pill pill-b">'+r.dp+'</span>'
+        +'<span class="pill pill-g" style="margin-left:6px">Active</span>'
+        +'<i class="bi bi-chevron-right" style="font-size:12px;color:#94A3B8;margin-left:10px"></i>'
+        +'</div>';
+    }).join('');
+}
+
+function screenReferrals(){
+  var stages=['Received','Screening','Interview','Approved'];
+  var refs=[
+    {name:'Jamal M.',ini:'JM',stage:'Screening',district:'District 3',days:'2 days ago'},
+    {name:'Ryan P.',ini:'RP',stage:'Interview',district:'District 7',days:'5 days ago'},
+    {name:'Carlos B.',ini:'CB',stage:'Received',district:'District 2',days:'1 day ago'},
+    {name:'Mike J.',ini:'MJ',stage:'Approved',district:'District 11',days:'1 week ago'},
+  ];
+  return '<div style="display:flex;gap:6px;margin-bottom:16px">'
+    +stages.map(function(s,i){
+      var count=refs.filter(function(r){return r.stage===s;}).length;
+      return '<div style="flex:1;background:white;border:.5px solid #D8DCE3;border-radius:8px;padding:10px 12px;text-align:center">'
+        +'<div style="font-size:18px;font-weight:700;color:#1A2B45;font-family:\'DM Sans\',sans-serif">'+count+'</div>'
+        +'<div style="font-size:10px;color:#4A5568;text-transform:uppercase;letter-spacing:.05em;margin-top:2px">'+s+'</div></div>';
+    }).join('')+'</div>'
+    +refs.map(function(r){
+      var stageColor={Received:'pill-b',Screening:'pill-a',Interview:'pill-b',Approved:'pill-g'};
+      return '<div class="res-row">'
+        +'<div class="av av-b" style="background:#EDE9FE;color:#5B21B6">'+r.ini+'</div>'
+        +'<div style="flex:1;min-width:0"><div style="font-size:13px;font-weight:600;color:#1A2B45">'+r.name+'</div>'
+        +'<div style="font-size:11px;color:#4A5568">'+r.district+' · '+r.days+'</div></div>'
+        +'<span class="pill '+(stageColor[r.stage]||'pill-b')+'">'+r.stage+'</span>'
+        +'<button class="btn btn-ghost" style="font-size:11px;padding:5px 12px;margin-left:8px">View →</button>'
+        +'</div>';
+    }).join('');
+}
+
+function screenPCIntake(){
+  var items=['House rules reviewed and signed','Room assignment confirmed','Emergency contacts collected','Medication list verified with MAR','P&O officer call scheduled','90-day expectations explained','Resident rights reviewed'];
+  return '<div style="display:flex;gap:8px;margin-bottom:16px">'
+    +'<div style="flex:1;background:#E8F0FB;border:1px solid #B5D4F4;border-radius:8px;padding:10px 12px;text-align:center"><div style="font-size:12px;font-weight:600;color:#1B5EBE">NOA</div><div style="font-size:10px;color:#1B5EBE;margin-top:2px">Complete</div></div>'
+    +'<div style="flex:1;background:#E8F0FB;border:1px solid #B5D4F4;border-radius:8px;padding:10px 12px;text-align:center"><div style="font-size:12px;font-weight:600;color:#1B5EBE">Background</div><div style="font-size:10px;color:#1B5EBE;margin-top:2px">Complete</div></div>'
+    +'<div style="flex:1;background:#F5C200;border:1px solid #D4A800;border-radius:8px;padding:10px 12px;text-align:center"><div style="font-size:12px;font-weight:700;color:#1A2B45">Checklist</div><div style="font-size:10px;color:#1A2B45;margin-top:2px">In progress</div></div>'
+    +'</div>'
+    +'<div class="card"><div class="section-title">Day 1 Checklist — Kevin H.</div>'
+    +'<div id="intake-checklist">'
+    +items.map(function(item,i){
+      var done = i<3;
+      return '<div class="chk-item"><div class="chkbox'+(done?' on':'')+'">'+(done?'<i class="bi bi-check-lg"></i>':'')+'</div><div style="font-size:13px;color:'+(done?'#1A6B35':'#1A2B45')+'">'+item+'</div></div>';
+    }).join('')+'</div>'
+    +'<div style="display:flex;gap:8px;margin-top:14px"><button class="btn btn-blue" style="opacity:.5" disabled>Complete Intake</button><button class="btn btn-ghost">Save Draft</button></div></div>';
+}
+
+function screenPCFollowups(){
+  var res=[
+    {name:'Daniel T.',ini:'DT',av:'av-b',days:14,status:'overdue'},
+    {name:'Marcus R.',ini:'MR',av:'av-g',days:8,status:'due-soon'},
+    {name:'Sam W.',ini:'SW',av:'av-a',days:3,status:'ok'},
+    {name:'Luis L.',ini:'LL',av:'av-p',days:1,status:'ok'},
+  ];
+  return '<div class="info-banner" style="background:#FFF3CD;border-color:#F5C200;color:#7A4F00"><i class="bi bi-exclamation-circle-fill" style="margin-right:6px"></i>1 resident is overdue for a follow-up meeting (14+ days).</div>'
+    +res.map(function(r){
+      var oc=r.status==='overdue'?'pill-r':r.status==='due-soon'?'pill-a':'pill-g';
+      var lbl=r.status==='overdue'?'Overdue':r.status==='due-soon'?'Due soon':'OK';
+      return '<div class="res-row">'
+        +'<div class="av '+r.av+'">'+r.ini+'</div>'
+        +'<div style="flex:1;min-width:0"><div style="font-size:13px;font-weight:600;color:#1A2B45">'+r.name+'</div>'
+        +'<div style="font-size:11px;color:#4A5568">Last meeting: '+r.days+' days ago</div></div>'
+        +'<span class="pill '+oc+'">'+lbl+'</span>'
+        +'<button class="btn btn-blue" style="font-size:11px;padding:5px 12px;margin-left:8px">Log Meeting</button>'
+        +'</div>';
+    }).join('');
+}
+
+function screenPCDischarge(){
+  var items=['Exit interview completed','Room inspected and cleared','House keys returned','Medication supply reconciled','P&O officer notified','Next housing confirmed','ID/Benefits returned to resident'];
+  return '<div class="card"><div style="display:flex;align-items:center;gap:10px;margin-bottom:14px">'
+    +'<div class="av av-g">MR</div><div><div style="font-size:14px;font-weight:600;color:#1A2B45">Marcus R.</div>'
+    +'<div style="font-size:11px;color:#4A5568">Dorcus 1 – 801 · Program complete</div></div></div>'
+    +'<div class="section-title">Discharge Checklist</div>'
+    +items.map(function(item,i){
+      var done=i<2;
+      return '<div class="chk-item"><div class="chkbox'+(done?' on':'')+'">'+(done?'<i class="bi bi-check-lg"></i>':'')+'</div><div style="font-size:13px;color:'+(done?'#1A6B35':'#1A2B45')+'">'+item+'</div></div>';
+    }).join('')
+    +'<div class="form-row" style="margin-top:12px"><label class="form-lbl">Forwarding address *</label><input class="input" placeholder="Where is Devon going?"/></div>'
+    +'<div style="display:flex;gap:8px;margin-top:14px"><button class="btn btn-blue" style="background:#1A6B35;opacity:.5" disabled>Finalize Discharge</button><button class="btn btn-ghost">Save Draft</button></div></div>';
+}
+
+/* ─── COACH SYSTEM ──────────────────────────────────────────── */
+function getEl(id){ return document.getElementById(id); }
+
+function positionCoach(step){
+  var box = getEl('coach-box');
+  var highlight = getEl('highlight');
+  var overlay = getEl('overlay');
+
+  var vw = window.innerWidth;
+  var vh = window.innerHeight;
+  var isMobile = vw < 600;
+
+  // On mobile always pin to bottom-center so nothing gets cut
+  if(isMobile){
+    box.style.transform = 'none';
+    box.style.left = '12px';
+    box.style.width = (vw-24)+'px';
+    box.style.maxWidth = 'none';
+    box.style.top = 'auto';
+    box.style.bottom = '16px';
+    if(!step.highlight || step.placement==='center'){
+      highlight.style.opacity='0';
+    } else {
+      var target = getEl(step.highlight);
+      if(target){
+        var rect = target.getBoundingClientRect();
+        var pad=6;
+        highlight.style.opacity='1';
+        highlight.style.top=(rect.top-pad)+'px';
+        highlight.style.left=(rect.left-pad)+'px';
+        highlight.style.width=(rect.width+pad*2)+'px';
+        highlight.style.height=(rect.height+pad*2)+'px';
+      } else {
+        highlight.style.opacity='0';
+      }
+    }
+    overlay.style.opacity='1';
+    return;
+  }
+
+  // Desktop — restore defaults
+  box.style.bottom='auto';
+  box.style.width='';
+  box.style.maxWidth='310px';
+
+  if(!step.highlight || step.placement==='center'){
+    box.style.top='50%';
+    box.style.left='50%';
+    box.style.transform='translate(-50%,-50%)';
+    highlight.style.opacity='0';
+    overlay.style.opacity='1';
+    return;
+  }
+
+  var target = getEl(step.highlight);
+  if(!target){
+    box.style.top='50%';
+    box.style.left='50%';
+    box.style.transform='translate(-50%,-50%)';
+    highlight.style.opacity='0';
+    return;
+  }
+
+  var rect = target.getBoundingClientRect();
+  var pad = 8;
+  highlight.style.opacity='1';
+  highlight.style.top=(rect.top-pad)+'px';
+  highlight.style.left=(rect.left-pad)+'px';
+  highlight.style.width=(rect.width+pad*2)+'px';
+  highlight.style.height=(rect.height+pad*2)+'px';
+
+  // Measure actual box size after render
+  var bw = Math.min(310, vw-24);
+  var bh = box.offsetHeight || 240;
+  var margin = 14;
+  var top, left;
+
+  // Try right of target
+  if(rect.right + margin + bw <= vw - margin){
+    left = rect.right + margin;
+    top = rect.top;
+  }
+  // Try left of target
+  else if(rect.left - margin - bw >= margin){
+    left = rect.left - margin - bw;
+    top = rect.top;
+  }
+  // Fall back: centre horizontally, below target
+  else {
+    left = (vw - bw) / 2;
+    top = rect.bottom + margin;
+  }
+
+  // Clamp vertically
+  if(top + bh > vh - margin) top = vh - bh - margin;
+  if(top < margin) top = margin;
+  // Clamp horizontally
+  if(left + bw > vw - margin) left = vw - bw - margin;
+  if(left < margin) left = margin;
+
+  box.style.transform = 'none';
+  box.style.top = top+'px';
+  box.style.left = left+'px';
+}
+
+function renderStep(){
+  var steps = role==='ra' ? RA_STEPS : PC_STEPS;
+  if(stepIndex >= steps.length){ finishTour(); return; }
+  var step = steps[stepIndex];
+
+  if(step.nav && step.nav !== currentPage) renderScreen(step.nav);
+  else if(!step.nav && step.screen !== currentPage) renderScreen(step.screen);
+
+  getEl('coach-step-lbl').textContent = 'Step '+(stepIndex+1)+' of '+steps.length;
+  getEl('coach-title').textContent = step.title;
+  getEl('coach-body').innerHTML = step.body;
+
+  var isLast = stepIndex === steps.length-1;
+  getEl('coach-next').textContent = isLast ? 'Finish ✓' : 'Next →';
+
+  // dots
+  getEl('coach-dots').innerHTML = steps.map(function(_,i){
+    return '<div class="coach-dot'+(i===stepIndex?' on':'')+'"></div>';
+  }).join('');
+
+  // progress
+  getEl('step-counter').textContent = stepIndex+1;
+  getEl('step-total').textContent = steps.length;
+  getEl('prog').style.width = Math.round((stepIndex+1)/steps.length*100)+'%';
+
+  setTimeout(function(){ positionCoach(step); }, 50);
+}
+
+function nextStep(){
+  var steps = role==='ra' ? RA_STEPS : PC_STEPS;
+  if(stepIndex >= steps.length-1){ finishTour(); return; }
+  stepIndex++;
+  renderStep();
+}
+
+function finishTour(){
+  getEl('overlay').style.opacity='0';
+  getEl('highlight').style.opacity='0';
+  getEl('coach-box').style.display='none';
+  getEl('prog').style.width='100%';
+  getEl('step-counter').textContent='Done';
+}
+
+function skipTour(){ finishTour(); }
+
+function goToPage(page){
+  renderScreen(page);
+  var steps = role==='ra' ? RA_STEPS : PC_STEPS;
+  positionCoach(steps[stepIndex]);
+}
+
+function switchRole(r){
+  role=r; stepIndex=0;
+  document.getElementById('btn-ra').className='role-sw-btn'+(r==='ra'?' active':'');
+  document.getElementById('btn-pc').className='role-sw-btn'+(r==='pc'?' active':'');
+  document.getElementById('user-role').textContent = r==='ra'?'Resident Advisor':'Program Coordinator';
+  getEl('coach-box').style.display='block';
+  getEl('overlay').style.opacity='1';
+  renderStep();
+}
+
+// Init
+renderScreen('ra_home');
+renderStep();
+</script>
+</body>
+</html>
